@@ -1,0 +1,23 @@
+# ship
+train: I:\ultralytics\ultralytics\datasets\train.txt
+val: I:\ultralytics\ultralytics\datasets\val.txt
+
+
+# Classes
+names:
+  0: Container ship
+  1: General cargo ship
+  2: Bulk cargo carrier
+  3: Ferry boat
+  4: Tug
+  5: Kayak
+  6: Oil carrier
+  7: Ore carrier
+  8: Fishing boat
+  9: Passenger ship
+  10: Sailing ship
+  11: Barge
+  12: War ship
+  13: Canoe
+  14: Speed boat
+
