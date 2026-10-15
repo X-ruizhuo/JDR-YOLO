@@ -42,9 +42,19 @@ def main():
         parser.error(f"Pretrained weights not found: {args.pretrained}")
     model = YOLO(str(MODEL))
     model.load(str(args.pretrained))
-    module_names = [type(module).__name__ for module in model.model.modules()]
-    if "BasicRFB" not in module_names or "BottleneckCSP" not in module_names:
-        raise RuntimeError("JDR-YOLO architecture is missing BasicRFB or MultiCSP")
+    modules = list(model.model.modules())
+    rfb_count = sum(type(module).__name__ == "BasicRFB" for module in modules)
+    csp_modules = [module for module in modules if type(module).__name__ == "BottleneckCSP"]
+    rep_count = sum(type(child).__name__ == "RepBlock"
+                    for module in csp_modules for child in module.modules())
+    print(f"JDR-YOLO modules: BasicRFB={rfb_count}, BottleneckCSP={len(csp_modules)}, "
+          f"RepBlock={rep_count}; config={MODEL}", flush=True)
+    if rfb_count != 3 or not csp_modules or not rep_count:
+        raise RuntimeError(
+            "JDR-YOLO modules are incomplete. Sync yolov8l-BasicRFB.yaml and "
+            "ultralytics/nn/modules/block.py from the updated workspace; "
+            "BasicRFB=3, BottleneckCSP>0, and RepBlock>0 are required."
+        )
     model.train(
         data=str(args.data), epochs=args.epochs, imgsz=args.imgsz,
         batch=args.batch, workers=args.workers, device=args.device,
