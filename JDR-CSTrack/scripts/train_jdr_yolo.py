@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 from pathlib import Path
 
 
@@ -26,6 +27,10 @@ def main():
     if args.batch < 1 or args.epochs < 1:
         parser.error("--batch and --epochs must be positive")
     os.environ.setdefault("TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD", "1")
+    sys.path.insert(0, str(ROOT))
+    import ultralytics
+    if Path(ultralytics.__file__).resolve().parent != ROOT / "ultralytics":
+        raise RuntimeError(f"Expected repository Ultralytics, got {ultralytics.__file__}")
     from ultralytics import YOLO
 
     if args.resume:

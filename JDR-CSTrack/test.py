@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -38,6 +39,10 @@ def main():
     if not sequences:
         parser.error(f"No sequence subdirectories found in {args.images}")
     os.environ.setdefault("TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD", "1")
+    sys.path.insert(0, str(ROOT))
+    import ultralytics
+    if Path(ultralytics.__file__).resolve().parent != ROOT / "ultralytics":
+        raise RuntimeError(f"Expected repository Ultralytics, got {ultralytics.__file__}")
     import cv2
     from ultralytics import YOLO
     args.output.mkdir(parents=True, exist_ok=True)
